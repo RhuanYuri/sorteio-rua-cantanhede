@@ -1,0 +1,12 @@
+{
+  "name": "sorteio-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "frontend:dev": "npm --prefix apps/frontend run dev",
+    "frontend:build": "npm --prefix apps/frontend run build",
+    "frontend:preview": "npm --prefix apps/frontend run preview",
+    "backend:dev": "python -m uvicorn src.main:app --reload --app-dir apps/backend",
+    "backend:run": "python -m uvicorn src.main:app --app-dir apps/backend"
+  }
+}
