@@ -1,10 +1,12 @@
+import PageHeader from '../components/PageHeader'
+
 export default function MetodologiaPage() {
   return (
     <section>
-      <div className="page-header">
-        <h2 className="page-title">Pagina academica</h2>
-        <p className="page-desc">Explicacao metodologica do mecanismo de sorteio usado pelo sistema.</p>
-      </div>
+      <PageHeader
+        title="Pagina academica"
+        description="Explicacao metodologica do mecanismo de sorteio usado pelo sistema."
+      />
 
       <div className="card">
         <h3 className="section-title">Objetivo</h3>
@@ -41,21 +43,14 @@ export default function MetodologiaPage() {
         <h3 className="section-title">Saida produzida</h3>
         <p>Para a combinacao sorteada, o sistema retorna:</p>
         <ul>
-          <li>Rua e bairro selecionados.</li>
+          <li>Rua, bairro e cep selecionados.</li>
           <li>Total de casas na combinacao.</li>
           <li>Lista de numeros de endereco (quando disponivel).</li>
           <li>Conjunto de coordenadas geograficas unicas (latitude/longitude).</li>
         </ul>
       </div>
 
-      <div className="card info-card">
-        <h3 className="section-title">Interpretacao estatistica</h3>
-        <p>
-          Como a unidade de amostragem e a combinacao rua+bairro, combinacoes pequenas e grandes
-          possuem a mesma chance de serem escolhidas. Se o objetivo for refletir proporcionalmente
-          o total de domicilios, o modelo deve evoluir para sorteio ponderado por total de casas.
-        </p>
-      </div>
+
     </section>
   )
 }

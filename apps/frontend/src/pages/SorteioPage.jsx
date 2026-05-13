@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { getRandomStreet } from '../api'
+import PageHeader from '../components/PageHeader'
+import SorteioResultCard from '../components/sorteio/SorteioResultCard'
+import SorteioHistorico from '../components/sorteio/SorteioHistorico'
 
 function formatCep(value) {
   const digits = String(value || '').replace(/\D/g, '').slice(0, 8)
@@ -30,10 +33,10 @@ export default function SorteioPage() {
 
   return (
     <section>
-      <div className="page-header">
-        <h2 className="page-title">Sortear rua</h2>
-        <p className="page-desc">Clique no botao para sortear aleatoriamente uma combinacao de rua e bairro.</p>
-      </div>
+      <PageHeader
+        title="Sortear rua"
+        description="Clique no botao para sortear aleatoriamente uma combinacao de rua e bairro."
+      />
 
       <div className="panel card">
         <div className="draw-center">
@@ -53,35 +56,13 @@ export default function SorteioPage() {
 
           {error && <p className="error">{error}</p>}
 
-          <div className={`result-card${resultado ? ' show' : ''}`}>
-            <span className="result-badge">Resultado</span>
-            <p className="result-street">Rua: {resultado?.rua || '-'}</p>
-            <p className="result-neighborhood">Bairro: {resultado?.bairro || '-'}</p>
-            <p className="result-meta">CEP: {formatCep(resultado?.cep)}</p>
-            <p className="result-meta">Total de casas: {resultado?.total_casas ?? 0}</p>
-            <p className="result-meta">Coordenadas: {resultado?.coordenadas?.length || 0}</p>
-            <p className="result-meta">
-              Numeros: {resultado?.numeros?.slice(0, 20).join(', ') || '-'}
-            </p>
-          </div>
+          <SorteioResultCard resultado={resultado} formatCep={formatCep} />
         </div>
       </div>
 
       <div className="card">
         <h3 className="section-title">Ultimos sorteios</h3>
-        {historico.length === 0 ? (
-          <p className="muted-text">Nenhum sorteio realizado ainda.</p>
-        ) : (
-          <div className="history-list">
-            {historico.map((item, index) => (
-              <div key={`${item.rua}-${item.bairro}-${index}`} className="history-item">
-                <span className="history-street">Rua: {item.rua || '-'}</span>
-                <span className="history-neighborhood">Bairro: {item.bairro || '-'}</span>
-                <span className="history-neighborhood">CEP: {formatCep(item.cep)}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <SorteioHistorico historico={historico} formatCep={formatCep} />
       </div>
     </section>
   )
