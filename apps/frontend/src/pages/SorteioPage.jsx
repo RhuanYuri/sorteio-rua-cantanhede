@@ -55,7 +55,7 @@ export default function SorteioPage() {
 
           <div className={`result-card${resultado ? ' show' : ''}`}>
             <span className="result-badge">Resultado</span>
-            <p className="result-street">{resultado?.rua || '-'}</p>
+            <p className="result-street">Rua: {resultado?.rua || '-'}</p>
             <p className="result-neighborhood">Bairro: {resultado?.bairro || '-'}</p>
             <p className="result-meta">CEP: {formatCep(resultado?.cep)}</p>
             <p className="result-meta">Total de casas: {resultado?.total_casas ?? 0}</p>
@@ -75,7 +75,7 @@ export default function SorteioPage() {
           <div className="history-list">
             {historico.map((item, index) => (
               <div key={`${item.rua}-${item.bairro}-${index}`} className="history-item">
-                <span className="history-street">{item.rua}</span>
+                <span className="history-street">Rua: {item.rua || '-'}</span>
                 <span className="history-neighborhood">Bairro: {item.bairro || '-'}</span>
                 <span className="history-neighborhood">CEP: {formatCep(item.cep)}</span>
               </div>
