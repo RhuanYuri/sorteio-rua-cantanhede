@@ -50,6 +50,7 @@ export default function SorteioPage() {
             <span className="result-badge">Resultado</span>
             <p className="result-street">{resultado?.rua || '-'}</p>
             <p className="result-neighborhood">{resultado?.bairro || '-'}</p>
+            <p className="result-meta">CEP: {resultado?.cep || '-'}</p>
             <p className="result-meta">Total de casas: {resultado?.total_casas ?? 0}</p>
             <p className="result-meta">Coordenadas: {resultado?.coordenadas?.length || 0}</p>
             <p className="result-meta">
@@ -69,6 +70,7 @@ export default function SorteioPage() {
               <div key={`${item.rua}-${item.bairro}-${index}`} className="history-item">
                 <span className="history-street">{item.rua}</span>
                 <span className="history-neighborhood">{item.bairro}</span>
+                <span className="history-neighborhood">CEP: {item.cep || '-'}</span>
               </div>
             ))}
           </div>

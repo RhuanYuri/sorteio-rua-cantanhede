@@ -9,6 +9,7 @@ import pandas as pd
 
 COL_RUA = "NOM_SEGLOGR"
 COL_BAIRRO = "DSC_LOCALIDADE"
+COL_CEP = "CEP"
 COL_NUMERO = "NUM_ENDERECO"
 COL_ESPECIE = "COD_ESPECIE"
 COL_LAT = "LATITUDE"
@@ -91,6 +92,21 @@ def combinacoes_rua_bairro(casas: pd.DataFrame) -> list[dict[str, str]]:
 def detalhes_rua_bairro(casas: pd.DataFrame, rua: str, bairro: str) -> dict[str, Any]:
     dados = casas[(casas[COL_RUA] == rua) & (casas[COL_BAIRRO] == bairro)].copy()
 
+    cep = "SEM CEP"
+    if COL_CEP in dados.columns:
+        ceps = (
+            dados[COL_CEP]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+            .replace("", pd.NA)
+            .dropna()
+            .drop_duplicates()
+            .tolist()
+        )
+        if ceps:
+            cep = ceps[0]
+
     numeros = (
         dados[COL_NUMERO]
         .fillna("SN")
@@ -111,6 +127,7 @@ def detalhes_rua_bairro(casas: pd.DataFrame, rua: str, bairro: str) -> dict[str,
     return {
         "rua": rua,
         "bairro": bairro,
+        "cep": cep,
         "total_casas": int(dados.shape[0]),
         "numeros": numeros,
         "coordenadas": coords,
