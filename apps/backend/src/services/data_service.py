@@ -26,8 +26,11 @@ FILTER_COLUMNS = [
 def default_csv_path() -> Path:
     project_root = Path(__file__).resolve().parents[4]
     workspace_root = project_root.parent
+    backend_root = Path(__file__).resolve().parents[2]
 
     candidates = [
+        Path("/data/2103208_CHAPADINHA.csv"),
+        backend_root / "data" / "2103208_CHAPADINHA.csv",
         workspace_root / "2103208_CHAPADINHA.csv",
         project_root / "2103208_CHAPADINHA.csv",
     ]
@@ -48,7 +51,11 @@ def csv_path() -> Path:
 def load_df() -> pd.DataFrame:
     path = csv_path()
     if not path.exists():
-        raise FileNotFoundError(f"CSV nao encontrado: {path}")
+        raise FileNotFoundError(
+            "CSV nao encontrado: "
+            f"{path}. "
+            "Defina DATA_CSV_PATH no ambiente ou monte o arquivo em /data/2103208_CHAPADINHA.csv."
+        )
 
     return pd.read_csv(path, sep=";", encoding="latin-1")
 
