@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getSummary } from '../api'
+import { getCsvDownloadUrl, getSummary } from '../api'
 
 export default function DadosPage() {
   const [loading, setLoading] = useState(true)
@@ -9,6 +9,7 @@ export default function DadosPage() {
   const [pageSize, setPageSize] = useState(25)
   const [filterInput, setFilterInput] = useState('')
   const [appliedFilter, setAppliedFilter] = useState('')
+  const downloadUrl = getCsvDownloadUrl()
 
   useEffect(() => {
     async function load() {
@@ -99,6 +100,11 @@ export default function DadosPage() {
         <p><strong>Arquivo:</strong> {dados.arquivo}</p>
         <p><strong>Total de colunas:</strong> {dados.total_colunas}</p>
         <p><strong>Combinacoes rua+bairro:</strong> {dados.total_combinacoes_rua_bairro}</p>
+        <p>
+          <a className="action-link" href={downloadUrl} target="_blank" rel="noreferrer">
+            Baixar CSV completo
+          </a>
+        </p>
       </div>
 
       <div className="card">

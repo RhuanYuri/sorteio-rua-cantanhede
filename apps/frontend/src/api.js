@@ -21,3 +21,7 @@ export async function getRandomStreet() {
   }
   return response.json()
 }
+
+export function getCsvDownloadUrl() {
+  return `${API_BASE}/download-csv`
+}

@@ -31,7 +31,16 @@ export default function SorteioPage() {
       <div className="panel card">
         <div className="draw-center">
           <button type="button" className="draw-btn" onClick={handleSortear} disabled={loading}>
-            <span className={`draw-icon${loading ? ' spinning' : ''}`}>O</span>
+            <span className={`draw-icon${loading ? ' spinning' : ''}`} aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.8" />
+                <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                <circle cx="16" cy="16" r="1.6" fill="currentColor" />
+                <circle cx="8" cy="16" r="1.6" fill="currentColor" />
+                <circle cx="16" cy="8" r="1.6" fill="currentColor" />
+              </svg>
+            </span>
             <span className="draw-label">{loading ? 'Sorteando...' : 'Sortear'}</span>
           </button>
 

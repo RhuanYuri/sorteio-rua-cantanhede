@@ -3,8 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Query
+from fastapi.responses import FileResponse
 
-from src.controllers.data_controller import random_street_controller, summary_controller
+from src.controllers.data_controller import (
+    download_csv_controller,
+    random_street_controller,
+    summary_controller,
+)
 
 router = APIRouter(tags=['data'])
 
@@ -21,3 +26,8 @@ def summary(
 @router.get('/random')
 def random_street() -> dict[str, Any]:
     return random_street_controller()
+
+
+@router.get('/download-csv')
+def download_csv() -> FileResponse:
+    return download_csv_controller()
