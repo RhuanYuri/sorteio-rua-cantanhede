@@ -38,8 +38,34 @@ export default function DadosPage() {
     setPage(1)
   }
 
-  if (loading) return <p>Carregando dados gerais...</p>
-  if (error) return <p className="error">{error}</p>
+  if (loading && !dados) {
+    return (
+      <section>
+        <div className="page-header">
+          <h2 className="page-title">Dados gerais</h2>
+          <p className="page-desc">Resumo do dataset e tabela paginada.</p>
+        </div>
+        <div className="card">
+          <p className="muted-text">Carregando dados gerais...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (error && !dados) {
+    return (
+      <section>
+        <div className="page-header">
+          <h2 className="page-title">Dados gerais</h2>
+          <p className="page-desc">Resumo do dataset e tabela paginada.</p>
+        </div>
+        <div className="card">
+          <p className="error">{error}</p>
+        </div>
+      </section>
+    )
+  }
+
   if (!dados) return null
 
   const colunasTabela = dados.colunas || []
@@ -47,34 +73,61 @@ export default function DadosPage() {
 
   return (
     <section>
-      <h2>Dados Gerais do DataFrame</h2>
+      <div className="page-header">
+        <h2 className="page-title">Dados gerais</h2>
+        <p className="page-desc">Resumo do DataFrame com filtros por colunas especificas e paginacao.</p>
+      </div>
+
+      {error && <p className="error">{error}</p>}
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <p className="stat-label">Total de linhas</p>
+          <p className="stat-value">{dados.total_linhas}</p>
+        </div>
+        <div className="stat-card">
+          <p className="stat-label">Linhas apos filtro</p>
+          <p className="stat-value">{dados.total_linhas_filtradas}</p>
+        </div>
+        <div className="stat-card">
+          <p className="stat-label">Registros residenciais</p>
+          <p className="stat-value">{dados.total_registros_residenciais}</p>
+        </div>
+      </div>
 
       <div className="card">
         <p><strong>Arquivo:</strong> {dados.arquivo}</p>
-        <p><strong>Total de linhas:</strong> {dados.total_linhas}</p>
-        <p><strong>Total de linhas (apos filtro):</strong> {dados.total_linhas_filtradas}</p>
         <p><strong>Total de colunas:</strong> {dados.total_colunas}</p>
-        <p><strong>Registros residenciais:</strong> {dados.total_registros_residenciais}</p>
         <p><strong>Combinacoes rua+bairro:</strong> {dados.total_combinacoes_rua_bairro}</p>
       </div>
 
       <div className="card">
-        <h3>Top bairros por casas</h3>
-        <ul>
-          {(dados.top_bairros || []).map((item) => (
-            <li key={`${item.bairro}-${item.total_casas}`}>
-              {item.bairro}: {item.total_casas}
-            </li>
-          ))}
-        </ul>
+        <h3 className="section-title">Top bairros por casas</h3>
+        <div className="neighborhood-list">
+          {(dados.top_bairros || []).map((item) => {
+            const max = dados.top_bairros?.[0]?.total_casas || 1
+            const largura = Math.max(4, Math.round((item.total_casas / max) * 100))
+            return (
+              <div key={`${item.bairro}-${item.total_casas}`} className="neighborhood-item">
+                <div className="neighborhood-row">
+                  <span className="neighborhood-name">{item.bairro}</span>
+                  <span className="neighborhood-count">{item.total_casas}</span>
+                </div>
+                <div className="bar-track">
+                  <div className="bar-fill" style={{ width: `${largura}%` }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <div className="card">
-        <h3>Tabela de dados do DataFrame (amostra)</h3>
+        <h3 className="section-title">Tabela de dados do DataFrame</h3>
         <div className="table-controls">
           <input
             type="text"
-            placeholder="Filtrar por qualquer campo..."
+            placeholder="Filtrar por CEP, localidade e logradouro..."
             value={filterInput}
             onChange={(event) => setFilterInput(event.target.value)}
           />
@@ -93,7 +146,7 @@ export default function DadosPage() {
           </select>
 
           <button type="button" onClick={handleAplicarFiltro} disabled={loading}>
-            Aplicar Filtro
+            Aplicar filtro
           </button>
 
           <button type="button" onClick={handleLimparFiltro} disabled={loading}>
