@@ -30,6 +30,7 @@ def default_csv_path() -> Path:
 
     candidates = [
         Path("/data/2103208_CHAPADINHA.csv"),
+        backend_root / "2103208_CHAPADINHA.csv",
         backend_root / "data" / "2103208_CHAPADINHA.csv",
         workspace_root / "2103208_CHAPADINHA.csv",
         project_root / "2103208_CHAPADINHA.csv",
