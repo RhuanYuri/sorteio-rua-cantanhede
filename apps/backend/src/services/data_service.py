@@ -13,11 +13,31 @@ COL_NUMERO = "NUM_ENDERECO"
 COL_ESPECIE = "COD_ESPECIE"
 COL_LAT = "LATITUDE"
 COL_LON = "LONGITUDE"
+FILTER_COLUMNS = [
+    "CEP",
+    "DSC_LOCALIDADE",
+    "NOM_TIPO_SEGLOGR",
+    "NOM_TITULO_SEGLOGR",
+    "NOM_SEGLOGR",
+    "NOM_COMP_ELEM1",
+]
 
 
 def default_csv_path() -> Path:
-    repo_root = Path(__file__).resolve().parents[3]
-    return repo_root.parent / "2103208_CHAPADINHA.csv"
+    project_root = Path(__file__).resolve().parents[4]
+    workspace_root = project_root.parent
+
+    candidates = [
+        workspace_root / "2103208_CHAPADINHA.csv",
+        project_root / "2103208_CHAPADINHA.csv",
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    # Mantem um caminho previsivel para a mensagem de erro quando o arquivo nao existir.
+    return candidates[0]
 
 
 def csv_path() -> Path:
@@ -89,10 +109,33 @@ def detalhes_rua_bairro(casas: pd.DataFrame, rua: str, bairro: str) -> dict[str,
     }
 
 
-def build_summary() -> dict[str, Any]:
+def build_summary(page: int = 1, page_size: int = 25, filter_text: str = "") -> dict[str, Any]:
     df = load_df()
     casas = casas_df(df)
     combinacoes = combinacoes_rua_bairro(casas)
+
+    filtro = filter_text.strip().lower()
+    filtered_df = df
+
+    if filtro:
+        colunas_filtro_disponiveis = [col for col in FILTER_COLUMNS if col in df.columns]
+        if colunas_filtro_disponiveis:
+            texto_df = df[colunas_filtro_disponiveis].fillna("").astype(str)
+            mask = texto_df.apply(
+                lambda row: row.str.lower().str.contains(filtro, regex=False).any(), axis=1
+            )
+            filtered_df = df[mask].copy()
+        else:
+            filtered_df = df.iloc[0:0].copy()
+
+    total_linhas_filtradas = int(filtered_df.shape[0])
+    total_paginas = max(1, (total_linhas_filtradas + page_size - 1) // page_size)
+    page = min(max(1, page), total_paginas)
+
+    inicio = (page - 1) * page_size
+    fim = inicio + page_size
+    amostra_df = filtered_df.iloc[inicio:fim].copy()
+    amostra_df = amostra_df.where(pd.notna(amostra_df), None)
 
     bairros_top = (
         casas[COL_BAIRRO]
@@ -106,8 +149,15 @@ def build_summary() -> dict[str, Any]:
     return {
         "arquivo": str(csv_path()),
         "total_linhas": int(df.shape[0]),
+        "total_linhas_filtradas": total_linhas_filtradas,
         "total_colunas": int(df.shape[1]),
         "colunas": df.columns.tolist(),
+        "total_linhas_amostra": int(amostra_df.shape[0]),
+        "amostra_dataframe": amostra_df.to_dict("records"),
+        "page": page,
+        "page_size": page_size,
+        "total_paginas": total_paginas,
+        "filtro": filter_text,
         "total_registros_residenciais": int(casas.shape[0]),
         "total_combinacoes_rua_bairro": len(combinacoes),
         "amostra_combinacoes": combinacoes[:20],

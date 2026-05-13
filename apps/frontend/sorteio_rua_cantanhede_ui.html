@@ -1,0 +1,351 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .app { background: var(--color-background-tertiary); min-height: 100vh; padding: 0; }
+
+  .topbar {
+    background: var(--color-background-primary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: #1D9E75;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon i { color: #fff; font-size: 17px; }
+  .brand-name { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+  .brand-sub { font-size: 12px; color: var(--color-text-secondary); }
+
+  .nav { display: flex; gap: 4px; }
+  .nav-btn {
+    padding: 6px 14px; border-radius: var(--border-radius-md);
+    border: none; background: transparent; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--color-text-secondary);
+    transition: all 0.15s;
+  }
+  .nav-btn.active {
+    background: #E1F5EE; color: #0F6E56;
+  }
+  .nav-btn:hover:not(.active) { background: var(--color-background-secondary); }
+
+  .main { padding: 32px 24px; max-width: 760px; margin: 0 auto; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .page-desc { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; line-height: 1.5; }
+
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .draw-center {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 32px 0;
+    text-align: center;
+  }
+
+  .draw-btn {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 2px solid var(--color-border-tertiary);
+    background: var(--color-background-secondary);
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .draw-btn:hover {
+    border-color: #1D9E75;
+    background: #E1F5EE;
+  }
+  .draw-btn:hover .draw-btn-icon { color: #0F6E56; }
+  .draw-btn:hover .draw-btn-label { color: #0F6E56; }
+  .draw-btn:active { transform: scale(0.96); }
+  .draw-btn-icon { font-size: 36px; color: var(--color-text-secondary); transition: color 0.2s; }
+  .draw-btn-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); transition: color 0.2s; }
+
+  .result-area {
+    margin-top: 28px;
+    width: 100%;
+  }
+
+  .result-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px;
+    border: 0.5px solid var(--color-border-tertiary);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+  }
+  .result-card.show { opacity: 1; transform: none; }
+
+  .result-badge {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    padding: 3px 10px; border-radius: 20px;
+    background: #E1F5EE; color: #0F6E56;
+    text-transform: uppercase;
+  }
+
+  .result-street {
+    font-size: 26px; font-weight: 500; color: var(--color-text-primary);
+    text-align: center; line-height: 1.3;
+  }
+  .result-neighborhood {
+    font-size: 15px; color: var(--color-text-secondary);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .result-neighborhood i { font-size: 15px; }
+
+  .divider { width: 100%; height: 0.5px; background: var(--color-border-tertiary); margin: 4px 0; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 16px;
+  }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 500; color: var(--color-text-primary); }
+
+  .section-label {
+    font-size: 12px; font-weight: 500; color: var(--color-text-secondary);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .neighborhood-list { display: flex; flex-direction: column; gap: 8px; }
+  .neighborhood-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+  }
+  .neighborhood-name { color: var(--color-text-primary); font-weight: 500; }
+  .neighborhood-count {
+    font-size: 12px; color: #0F6E56; font-weight: 500;
+    background: #E1F5EE; padding: 2px 10px; border-radius: 20px;
+  }
+
+  .bar-wrap { margin-top: 4px; }
+  .bar-track {
+    height: 4px; background: var(--color-border-tertiary);
+    border-radius: 2px; overflow: hidden; width: 100%; margin-top: 2px;
+  }
+  .bar-fill {
+    height: 100%; background: #1D9E75; border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .spinning { animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .pulse { animation: pulse-anim 0.5s ease; }
+  @keyframes pulse-anim {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+</style>
+
+<h2 class="sr-only">Sistema de Sorteio — Rua Cantanhede, identidade visual</h2>
+
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="ti ti-map-pin" aria-hidden="true"></i></div>
+      <div>
+        <div class="brand-name">Sorteio</div>
+        <div class="brand-sub">Rua Cantanhede · Chapadinha</div>
+      </div>
+    </div>
+    <nav class="nav" aria-label="Navegação principal">
+      <button class="nav-btn active" onclick="showPage('sorteio', this)">
+        <i class="ti ti-dice" aria-hidden="true"></i> Sorteio
+      </button>
+      <button class="nav-btn" onclick="showPage('dados', this)">
+        <i class="ti ti-chart-bar" aria-hidden="true"></i> Dados gerais
+      </button>
+    </nav>
+  </div>
+
+  <div class="main">
+
+    <div id="page-sorteio" class="page active">
+      <div class="page-header">
+        <div class="page-title">Sortear rua</div>
+        <div class="page-desc">Clique no botão para sortear aleatoriamente uma rua e bairro do dataset.</div>
+      </div>
+
+      <div class="card">
+        <div class="draw-center">
+          <button class="draw-btn" id="draw-btn" onclick="realizarSorteio()" aria-label="Sortear">
+            <i class="ti ti-dice-5" id="draw-icon" aria-hidden="true" style="font-size:42px; color: var(--color-text-secondary);"></i>
+            <span class="draw-btn-label">Sortear</span>
+          </button>
+
+          <div class="result-area">
+            <div class="result-card" id="result-card">
+              <span class="result-badge">Resultado</span>
+              <div class="result-street" id="res-street">—</div>
+              <div class="divider"></div>
+              <div class="result-neighborhood">
+                <i class="ti ti-building-community" aria-hidden="true"></i>
+                <span id="res-neighborhood">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 20px 28px;">
+        <div class="section-label">Últimos sorteios</div>
+        <div id="history-list" style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: 13px; color: var(--color-text-secondary); font-style: italic;">Nenhum sorteio realizado ainda.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-dados" class="page">
+      <div class="page-header">
+        <div class="page-title">Dados gerais</div>
+        <div class="page-desc">Resumo do dataset — distribuição de ruas por bairro.</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-road" aria-hidden="true" style="font-size:13px; margin-right:4px;"></i>Total de ruas</div>
+          <div class="stat-value">1.847</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-building-community" aria-hidden="true" style="font-size:13px; margin-right:4px;"></i>Bairros</div>
+          <div class="stat-value">12</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ti ti-users" aria-hidden="true" style="font-size:13px; margin-right:4px;"></i>Registros</div>
+          <div class="stat-value">4.203</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Ruas por bairro</div>
+        <div class="neighborhood-list" id="bairros-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const bairros = [
+  { name: "Centro", count: 312 },
+  { name: "João Paulo II", count: 248 },
+  { name: "Santa Luzia", count: 201 },
+  { name: "São Benedito", count: 187 },
+  { name: "Esperança", count: 165 },
+  { name: "Nova Chapadinha", count: 143 },
+  { name: "Jardim América", count: 128 },
+  { name: "Alto da Boa Vista", count: 116 },
+  { name: "Monte Castelo", count: 98 },
+  { name: "São Francisco", count: 84 },
+  { name: "Planalto", count: 72 },
+  { name: "Cohab", count: 93 },
+];
+
+const ruas = [
+  "Rua das Palmeiras", "Rua São João", "Rua da Paz", "Travessa do Sol",
+  "Rua Boa Esperança", "Rua 15 de Novembro", "Rua do Comércio",
+  "Rua Floriano Peixoto", "Travessa das Flores", "Rua Getúlio Vargas",
+  "Rua Presidente Vargas", "Rua Santa Maria", "Rua Nova",
+  "Travessa Central", "Rua Dom Pedro II"
+];
+
+const max = Math.max(...bairros.map(b => b.count));
+const list = document.getElementById('bairros-list');
+bairros.forEach(b => {
+  const pct = Math.round(b.count / max * 100);
+  list.innerHTML += `<div class="neighborhood-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+    <div style="display:flex; justify-content:space-between; width:100%;">
+      <span class="neighborhood-name">${b.name}</span>
+      <span class="neighborhood-count">${b.count}</span>
+    </div>
+    <div class="bar-track" style="width:100%;"><div class="bar-fill" style="width:${pct}%"></div></div>
+  </div>`;
+});
+
+let history = [];
+
+function realizarSorteio() {
+  const btn = document.getElementById('draw-btn');
+  const icon = document.getElementById('draw-icon');
+  btn.disabled = true;
+  icon.classList.add('spinning');
+
+  setTimeout(() => {
+    icon.classList.remove('spinning');
+    btn.disabled = false;
+
+    const rua = ruas[Math.floor(Math.random() * ruas.length)];
+    const bairro = bairros[Math.floor(Math.random() * bairros.length)].name;
+
+    const card = document.getElementById('result-card');
+    document.getElementById('res-street').textContent = rua;
+    document.getElementById('res-neighborhood').textContent = bairro;
+    card.classList.remove('show');
+    void card.offsetWidth;
+    card.classList.add('show');
+
+    icon.classList.add('pulse');
+    setTimeout(() => icon.classList.remove('pulse'), 500);
+
+    history.unshift({ rua, bairro });
+    if (history.length > 5) history.pop();
+    renderHistory();
+  }, 700);
+}
+
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (history.length === 0) {
+    el.innerHTML = '<div style="font-size:13px; color:var(--color-text-secondary); font-style:italic;">Nenhum sorteio realizado ainda.</div>';
+    return;
+  }
+  el.innerHTML = history.map((h, i) => `
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--color-background-secondary); border-radius:var(--border-radius-md); font-size:13px;">
+      <span style="color:var(--color-text-primary); font-weight:500;">${h.rua}</span>
+      <span style="color:var(--color-text-secondary);">${h.bairro}</span>
+    </div>
+  `).join('');
+}
+
+function showPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
