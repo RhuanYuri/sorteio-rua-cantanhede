@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { getRandomStreet } from '../api'
 
+function formatCep(value) {
+  const digits = String(value || '').replace(/\D/g, '').slice(0, 8)
+  if (!digits) return '-'
+  if (digits.length <= 5) return digits
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`
+}
+
 export default function SorteioPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -49,8 +56,8 @@ export default function SorteioPage() {
           <div className={`result-card${resultado ? ' show' : ''}`}>
             <span className="result-badge">Resultado</span>
             <p className="result-street">{resultado?.rua || '-'}</p>
-            <p className="result-neighborhood">{resultado?.bairro || '-'}</p>
-            <p className="result-meta">CEP: {resultado?.cep || '-'}</p>
+            <p className="result-neighborhood">Bairro: {resultado?.bairro || '-'}</p>
+            <p className="result-meta">CEP: {formatCep(resultado?.cep)}</p>
             <p className="result-meta">Total de casas: {resultado?.total_casas ?? 0}</p>
             <p className="result-meta">Coordenadas: {resultado?.coordenadas?.length || 0}</p>
             <p className="result-meta">
@@ -69,8 +76,8 @@ export default function SorteioPage() {
             {historico.map((item, index) => (
               <div key={`${item.rua}-${item.bairro}-${index}`} className="history-item">
                 <span className="history-street">{item.rua}</span>
-                <span className="history-neighborhood">{item.bairro}</span>
-                <span className="history-neighborhood">CEP: {item.cep || '-'}</span>
+                <span className="history-neighborhood">Bairro: {item.bairro || '-'}</span>
+                <span className="history-neighborhood">CEP: {formatCep(item.cep)}</span>
               </div>
             ))}
           </div>
